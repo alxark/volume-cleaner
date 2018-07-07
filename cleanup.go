@@ -94,14 +94,18 @@ func (s *CleanupService) Run() {
 				s.log.Infof("Moving %s to %s", curFullPath, newFullPath)
 				os.Rename(curFullPath, newFullPath)
 			}
-
-			s.CleanupRemoved()
 		}
 
 		s.log.Infof("Scanning finished. Sleep for %d", s.Period)
 		time.Sleep(time.Duration(s.Period) * time.Second)
 	}
+
+	s.CleanupRemoved()
 }
+
+/**
+ * Remove dirs which was earlier moved to removed folder
+ */
 func (s *CleanupService) CleanupRemoved() {
 	usage, err := s.GetUsage()
 	if err != nil {
@@ -110,7 +114,7 @@ func (s *CleanupService) CleanupRemoved() {
 
 	s.log.Infof("Total usage is %0.2f", usage)
 	if usage < 0.5 {
-		s.log.Infof("Not removing old files, total usage below 50%")
+		s.log.Infof("Not deleting moved files, total usage below 50 percents")
 		return
 	}
 
@@ -133,6 +137,9 @@ func (s *CleanupService) CleanupRemoved() {
 	}
 }
 
+/**
+ * Check data directory usage for cleanup
+ */
 func (s *CleanupService) GetUsage() (float64, error) {
 	fs := syscall.Statfs_t{}
 	err := syscall.Statfs(s.Directory, &fs)
