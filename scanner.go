@@ -35,11 +35,8 @@ func (s *Scanner) IsExpired(directory string, expiration int) (bool, int64) {
 			if expired, _ := s.IsExpired(directory+"/"+file.Name(), expiration); !expired {
 				return false, 0
 			}
-
-			s.log.Debugf("Finished scanning %s/%s for files. No new files found", directory, file.Name())
 			continue
 		}
-
 
 		bytesScanned += file.Size()
 		if file.ModTime().Unix() > minimumTime {

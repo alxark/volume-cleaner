@@ -69,10 +69,16 @@ func (s *CleanupService) Run() {
 				continue
 			}
 
+			if len(subFiles) == 0 {
+				os.Remove(s.Directory + "/" + dir.Name())
+				s.log.Infof("Directory %s is empty, removing it", dir.Name())
+				continue
+			}
+			
 			for _, subDir := range subFiles {
 				if !subDir.IsDir() {
-					s.log.Infof("Non directory found on subDir level: %s", subDir.Name())
-					os.Remove(s.Directory + "/" + dir.Name())
+					s.log.Infof("Non directory found on subDir level: %s/%s", dir.Name(), subDir.Name())
+					os.Remove(s.Directory + "/" + dir.Name() + "/" + subDir.Name())
 					continue
 				}
 
