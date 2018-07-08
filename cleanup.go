@@ -102,8 +102,12 @@ func (s *CleanupService) Run() {
 			}
 		}
 
-		s.CleanupRemoved()
-		
+		s.log.Infof("Removing already moved data")
+		err = s.CleanupRemoved()
+		if err != nil {
+			s.log.Infof("Failed to remove old data, got: %s", err.Error())
+		}
+
 		s.log.Infof("Scanning finished. Sleep for %d", s.Period)
 		time.Sleep(time.Duration(s.Period) * time.Second)
 	}
@@ -112,16 +116,16 @@ func (s *CleanupService) Run() {
 /**
  * Remove dirs which was earlier moved to removed folder
  */
-func (s *CleanupService) CleanupRemoved() {
+func (s *CleanupService) CleanupRemoved() error {
 	usage, err := s.GetUsage()
 	if err != nil {
-		return
+		return err
 	}
 
 	s.log.Infof("Total usage is %0.2f", usage)
 	if usage < 0.5 {
 		s.log.Infof("Not deleting moved files, total usage below 50 percents")
-		return
+		return nil
 	}
 
 	coef := int(math.Ceil(10.0 * (1.0 - usage)))
@@ -139,8 +143,13 @@ func (s *CleanupService) CleanupRemoved() {
 		}
 
 		s.log.Infof("Directory %s is fully expired. Going to free %0.2f MB", fullName, float64(bytes)/(1024*1024))
-		os.RemoveAll(fullName)
+		err = os.RemoveAll(fullName)
+		if err != nil {
+			s.log.Infof("failed to remove %s, got: %s", fullName, err.Error())
+		}
 	}
+
+	return nil
 }
 
 /**
