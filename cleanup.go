@@ -102,9 +102,10 @@ func (s *CleanupService) Run() {
 			}
 		}
 
+		s.CleanupRemoved()
+		
 		s.log.Infof("Scanning finished. Sleep for %d", s.Period)
 		time.Sleep(time.Duration(s.Period) * time.Second)
-		s.CleanupRemoved()
 	}
 }
 
