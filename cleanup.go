@@ -74,7 +74,7 @@ func (s *CleanupService) Run() {
 				s.log.Infof("Directory %s is empty, removing it", dir.Name())
 				continue
 			}
-			
+
 			for _, subDir := range subFiles {
 				if !subDir.IsDir() {
 					s.log.Infof("Non directory found on subDir level: %s/%s", dir.Name(), subDir.Name())
@@ -104,9 +104,8 @@ func (s *CleanupService) Run() {
 
 		s.log.Infof("Scanning finished. Sleep for %d", s.Period)
 		time.Sleep(time.Duration(s.Period) * time.Second)
+		s.CleanupRemoved()
 	}
-
-	s.CleanupRemoved()
 }
 
 /**
