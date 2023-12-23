@@ -17,7 +17,7 @@ func NewScanner(log *slog.Logger) (scanner *Scanner) {
 	return scanner
 }
 
-// check if there is any new files after expiration
+// IsExpired - check if there is any new files after expiration
 // threshold, if so return yes
 func (s *Scanner) IsExpired(directory string, expiration int) (expired bool, size int64, err error) {
 	expired = true
